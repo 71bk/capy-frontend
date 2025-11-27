@@ -1,7 +1,17 @@
 <script setup>
-const abc = ref(3);
+import { ref } from 'vue'
+
+const abc = ref(3)
 </script>
 <template>
-  {{ abc }}
+  <div id="app">
+    <router-view />
+  </div>
 </template>
-<style scoped></style>
+<style scoped>
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+</style>
