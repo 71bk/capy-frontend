@@ -98,7 +98,7 @@ const isCollapse = ref(true);
         :style="{ 'margin-left': isCollapse ? '200px' : '64px' }"
       >
         <el-scrollbar style="height: 100vh; width: 100%">
-          <el-header><el-button><</el-button>hello,user123</el-header>
+          <el-header>hello,user123</el-header>
           <el-main>
             <div class="main-container">
               <RouterView></RouterView>
@@ -135,7 +135,7 @@ const isCollapse = ref(true);
   padding: 0 24px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: end;
 }
 .el-aside {
   overflow: hidden;

@@ -1,5 +1,6 @@
 <script setup>
 import { VueDraggable as Draggable } from "vue-draggable-plus";
+import CollapsePlaylistItem from "./CollapsePlaylistItem.vue";
 const jsondata = [
   {
     chapter_name: "code",
