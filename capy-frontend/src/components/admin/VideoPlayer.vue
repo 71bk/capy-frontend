@@ -2,7 +2,7 @@
 import "shaka-player/dist/shaka-player.ui.js"; // ensures the UI build is registered
 import "shaka-player/dist/controls.css"; // required styling for Shaka controls
 import VideoPlayer from "@llamohank/custom-shaka-player";
-import samplevideo from "@/assets/sample.mp4";
+// import samplevideo from "@/assets/sample.mp4";
 const videoPlayerRef = ref(null);
 // let videoWidth = computed(() => videoPlayerRef.value?.videoWidth);
 const videoHeight = computed(() => videoPlayerRef.value?.videoHeight);
