@@ -89,6 +89,26 @@
 
             <!-- 通知組 -->
             <div class="icon-group notification-group">
+              <!-- 連線狀態指示器 -->
+              <ConnectionStatusIndicator />
+
+              <!-- 音效設定按鈕 -->
+              <el-popover
+                placement="bottom"
+                :width="300"
+                trigger="click"
+              >
+                <template #reference>
+                  <el-button circle class="icon-button" :class="{ 'sound-enabled': notificationStore.isSoundEnabled, 'sound-disabled': !notificationStore.isSoundEnabled }">
+                    <el-icon>
+                      <component :is="notificationStore.isSoundEnabled ? 'Microphone' : 'TurnOff'" />
+                    </el-icon>
+                  </el-button>
+                </template>
+                <NotificationSoundSettings />
+              </el-popover>
+
+              <!-- 通知按鈕 -->
               <el-badge :value="notificationStore.unreadCount" :hidden="notificationStore.unreadCount === 0" class="icon-badge">
                 <TheNotificationPopover>
                   <template #trigger>
@@ -115,7 +135,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Search, Reading, ShoppingCart, Star, Bell, Document, PriceTag } from '@element-plus/icons-vue'
+import { Search, Reading, ShoppingCart, Star, Bell, Document, PriceTag, Microphone, TurnOff } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { useCartStore } from '@/stores/cart'
 import { useWishlistStore } from '@/stores/wishlist'
@@ -123,6 +143,8 @@ import { useNotificationStore } from '@/stores/notification'
 import TheCartDrawer from '@/components/student/cart/TheCartDrawer.vue'
 import TheWishlistPopover from '@/components/student/wishlist/TheWishlistPopover.vue'
 import TheNotificationPopover from '@/components/student/notifications/TheNotificationPopover.vue'
+import ConnectionStatusIndicator from '@/components/student/notifications/ConnectionStatusIndicator.vue'
+import NotificationSoundSettings from '@/components/student/notifications/NotificationSoundSettings.vue'
 import TheUserDropdown from '@/components/student/main/TheUserDropdown.vue'
 
 const router = useRouter()
@@ -175,70 +197,20 @@ const handleSelect = (item) => {
   }
 }
 
-// ==================== 初始化模擬資料 ====================
-
-/**
- * 初始化購物車模擬資料（僅用於測試）
- */
-const initMockCartData = () => {
-  // 如果購物車已有資料，不重複初始化
-  if (cartStore.itemCount > 0) {
-    return
-  }
-
-  // 模擬課程資料
-  const mockCourses = [
-    {
-      id: 1,
-      title: 'Vue 3 完整開發指南：從入門到精通',
-      instructor: '張小明',
-      price: 1200,
-      cover_image_url: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400'
-    },
-    {
-      id: 2,
-      title: 'TypeScript 實戰開發：打造型別安全的應用程式',
-      instructor: '李美華',
-      price: 1500,
-      cover_image_url: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400'
-    },
-    {
-      id: 3,
-      title: 'Pinia 狀態管理完全攻略',
-      instructor: '王大偉',
-      price: 800,
-      cover_image_url: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400'
-    }
-  ]
-
-  // 將模擬課程加入購物車
-  mockCourses.forEach(course => {
-    cartStore.addItem(course)
-  })
-
-  console.log('✅ 已載入模擬購物車資料')
-}
+// ==================== 初始化資料 ====================
 
 // 元件掛載時初始化
-onMounted(() => {
-  // 先從 localStorage 載入
-  cartStore.loadFromStorage()
+onMounted(async () => {
+  // 注意：userStore.init() 已在 App.vue 和 router 中呼叫，這裡不需要重複呼叫
 
-  // 如果沒有資料，則載入模擬資料
-  if (cartStore.isEmpty) {
-    initMockCartData()
+  // 只有在已登入時才載入通知
+  if (userStore.isAuthenticated) {
+    // 從 localStorage 載入願望清單（快速顯示，不呼叫 API）
+    wishlistStore.loadFromStorage()
+
+    // 載入通知資料
+    notificationStore.fetchNotifications()
   }
-
-  // 載入願望清單資料
-  wishlistStore.loadFromStorage()
-
-  // 如果願望清單為空，載入模擬資料
-  if (wishlistStore.isEmpty) {
-    initMockWishlistData()
-  }
-
-  // 載入通知資料
-  notificationStore.fetchNotifications()
 })
 
 /**
@@ -289,8 +261,9 @@ const isApplicationPage = computed(() => {
  * 用於控制 "Become a Teacher" 按鈕的顯示
  */
 const isInstructor = computed(() => {
-  const roles = userStore.userInfo.roles || []
-  return roles.includes('instructor') || roles.includes('INSTRUCTOR')
+  // 檢查使用者是否為講師（暫時返回 false，因為 API 響應中沒有 roles）
+  // TODO: 當後端 API 提供 roles 資訊時，更新此邏輯
+  return false
 })
 
 /**
@@ -429,15 +402,15 @@ const handleNotifications = () => {
   --el-button-border-color: rgba(255, 255, 255, 0.6); /* 較明顯的白色邊框 */
   --el-button-text-color: #ffffff;
 
-  /* Hover 狀態：實心白底 + Teal 文字 */
+  /* Hover 狀態：實心白底 + 主色文字 */
   --el-button-hover-bg-color: #ffffff; /* 實心白色 */
   --el-button-hover-border-color: #ffffff;
-  --el-button-hover-text-color: #00BFA5; /* Primary Teal */
+  --el-button-hover-text-color: var(--capy-primary); /* 主色天空藍 */
 
   /* Active 狀態 */
   --el-button-active-bg-color: #f5f5f5;
   --el-button-active-border-color: #ffffff;
-  --el-button-active-text-color: #00BFA5;
+  --el-button-active-text-color: var(--capy-primary);
 
   font-weight: 600; /* 半粗體，提升可讀性 */
   transition: all 0.3s ease;
@@ -499,6 +472,24 @@ const handleNotifications = () => {
   height: 24px;
   background-color: rgba(255, 255, 255, 0.3); /* 半透明白色 */
   margin: 0 4px;
+}
+
+/* 音效按鈕啟用狀態 */
+.icon-button.sound-enabled {
+  --el-button-bg-color: rgba(103, 194, 58, 0.2);
+}
+
+.icon-button.sound-enabled:hover {
+  --el-button-hover-bg-color: rgba(103, 194, 58, 0.3);
+}
+
+/* 音效按鈕停用狀態 */
+.icon-button.sound-disabled {
+  --el-button-bg-color: rgba(144, 147, 153, 0.2);
+}
+
+.icon-button.sound-disabled:hover {
+  --el-button-hover-bg-color: rgba(144, 147, 153, 0.3);
 }
 
 @media (max-width: 768px) {
