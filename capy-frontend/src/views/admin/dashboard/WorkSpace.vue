@@ -87,52 +87,56 @@ onMounted(() => {
 
 <template>
   <h2 class="section-heading">管理員工作台</h2>
-  <div v-loading="loading" style="padding-top: 24px; display: flex; flex-direction: column; gap: 36px">
-    <div>
-      <h3 class="section-title">課程資訊</h3>
-      <el-row :gutter="20">
+  <div v-loading="loading" class="dashboard-container">
+    <!-- Stats Row -->
+    <div class="stats-section">
+      <h3 class="section-title">今日概況</h3>
+      <el-row :gutter="24">
         <el-col :span="6">
-          <div class="data-wrapper">
-            <span>今日新註冊用戶</span>
-            <span class="data">{{ dashboardData.todayNewUsers }}</span>
+          <div class="stat-card">
+            <span class="stat-card__label">今日新註冊用戶</span>
+            <span class="stat-card__value">{{ dashboardData.todayNewUsers }}</span>
           </div>
         </el-col>
         <el-col :span="6">
-          <div class="data-wrapper">
-            待審核上架申請
-            <span class="data" :class="{ undone: dashboardData.pendingCourseReview > 0 }">
+          <div class="stat-card">
+            <span class="stat-card__label">待審核上架申請</span>
+            <span class="stat-card__value" :class="{ 'stat-card__value--warning': dashboardData.pendingCourseReview > 0 }">
               {{ dashboardData.pendingCourseReview }}
+              <span v-if="dashboardData.pendingCourseReview > 0" class="pending-dot"></span>
             </span>
           </div>
         </el-col>
         <el-col :span="6">
-          <div class="data-wrapper">
-            待審核教師申請
-            <span class="data" :class="{ undone: dashboardData.pendingInstructorApplications > 0 }">
+          <div class="stat-card">
+            <span class="stat-card__label">待審核教師申請</span>
+            <span class="stat-card__value" :class="{ 'stat-card__value--warning': dashboardData.pendingInstructorApplications > 0 }">
               {{ dashboardData.pendingInstructorApplications }}
+              <span v-if="dashboardData.pendingInstructorApplications > 0" class="pending-dot"></span>
             </span>
           </div>
         </el-col>
         <el-col :span="6">
-          <div class="data-wrapper">
-            本月收益
-            <span class="data">
-              <el-text class="data" truncated>{{ formatCurrency(dashboardData.currentMonthRevenue) }}</el-text>
+          <div class="stat-card">
+            <span class="stat-card__label">本月收益</span>
+            <span class="stat-card__value stat-card__value--primary">
+              <el-text class="revenue-text" truncated>{{ formatCurrency(dashboardData.currentMonthRevenue) }}</el-text>
             </span>
           </div>
         </el-col>
       </el-row>
     </div>
 
-    <div>
+    <!-- Charts Section -->
+    <div class="charts-section">
       <h3 class="section-title">平台數據一覽</h3>
-      <el-row :gutter="20">
+      <el-row :gutter="24">
         <el-col :span="14">
-          <div class="wrapper">
-            <p style="font-size: 20px; color: rgb(84, 80, 80); display: flex">
-              本月學生人數成長
-              <span style="margin-left: auto; font-weight: 700">{{ dashboardData.currentMonthNewUsers }}人</span>
-            </p>
+          <div class="wrapper chart-wrapper">
+            <div class="chart-header">
+              <span class="chart-title">本月學生人數成長</span>
+              <span class="chart-value">{{ dashboardData.currentMonthNewUsers }} 人</span>
+            </div>
             <div class="chart-container">
               <UserGrowthChart :data="weeklyUserTrend" />
             </div>
@@ -140,16 +144,15 @@ onMounted(() => {
         </el-col>
         <el-col :span="10">
           <div class="wrapper">
-            <p style="font-size: 20px; color: rgb(84, 80, 80)">熱門課程Top5</p>
-
+            <p class="chart-title" style="margin-bottom: 8px">熱門課程 Top 5</p>
             <ul class="top-course-list">
               <template v-if="datalist.length">
-                <li v-for="item in datalist" :key="item.id">
-                  <div class="top-course-label">
-                    {{ item.name }}
+                <li v-for="item in datalist" :key="item.id" class="top-course-item">
+                  <div class="top-course-header">
+                    <span class="course-name">{{ item.name }}</span>
                     <el-button link type="primary">查看</el-button>
                   </div>
-                  <p style="font-size: 14px; font-weight: 500; margin-bottom: 4px">{{ item.num }}人</p>
+                  <p class="course-count">{{ item.num }} 人</p>
                   <el-progress :color="item.color" :show-text="false" :percentage="item.value" />
                 </li>
               </template>
@@ -159,7 +162,9 @@ onMounted(() => {
         </el-col>
       </el-row>
     </div>
-    <div>
+
+    <!-- Revenue Chart -->
+    <div class="revenue-section">
       <div class="wrapper">
         <GradientLineChart />
       </div>
@@ -168,51 +173,136 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.data-wrapper {
-  height: fit-content;
-  font-size: 16px;
-  color: rgb(84, 80, 80);
-  background-color: #fcfcfd;
-  box-shadow: 0 0 8px #0000001f;
-  padding: 24px;
-  border-radius: 16px;
-}
-.data {
-  margin-top: 24px;
-  font-weight: 700;
-  font-size: 24px;
-  display: block;
-}
-.undone {
-  position: relative;
-}
-.undone::after {
-  content: "";
-  margin-left: 4px;
-  position: absolute;
-
-  top: -12%;
-  border-radius: 50%;
-  width: 8px;
-  height: 8px;
-  background-color: red;
-}
-.chart-container {
-  height: 500px;
-  width: 100%;
-}
-.top-course-list {
-  padding-top: 36px;
+.dashboard-container {
+  padding-top: 24px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 48px;
 }
-.top-course-label {
-  padding-right: 2%;
-  margin-bottom: 8px;
+
+/* ==================== Stat Cards ==================== */
+.stat-card {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAFAFA 100%);
+  border-radius: 16px;
+  padding: 24px 28px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid #F3F4F6;
+  transition: all 0.25s ease;
+  height: 100%;
+}
+
+.stat-card:hover {
+  box-shadow: 0 8px 25px rgba(79, 70, 229, 0.1);
+  border-color: #E0E7FF;
+  transform: translateY(-2px);
+}
+
+.stat-card__label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6B7280;
+  margin-bottom: 16px;
+}
+
+.stat-card__value {
+  position: relative;
+  display: block;
+  font-size: 32px;
+  font-weight: 700;
+  color: #1F2937;
+  line-height: 1.2;
+}
+
+.stat-card__value--primary {
+  color: #4F46E5;
+}
+
+.stat-card__value--warning {
+  color: #D97706;
+}
+
+.pending-dot {
+  position: absolute;
+  top: 4px;
+  margin-left: 6px;
+  width: 10px;
+  height: 10px;
+  background-color: #EF4444;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.revenue-text {
+  font-size: 28px;
+  font-weight: 700;
+  color: #4F46E5;
+}
+
+/* ==================== Chart Section ==================== */
+.chart-wrapper {
+  height: 100%;
+}
+
+.chart-header {
   display: flex;
-  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.chart-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.chart-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #4F46E5;
+}
+
+.chart-container {
+  height: 450px;
+  width: 100%;
+}
+
+/* ==================== Top Course List ==================== */
+.top-course-list {
+  padding-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.top-course-item {
+  /* Add any specific styling */
+}
+
+.top-course-header {
+  display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.course-name {
+  font-weight: 500;
+  color: #374151;
+  font-size: 15px;
+}
+
+.course-count {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6B7280;
+  margin-bottom: 8px;
 }
 </style>
+

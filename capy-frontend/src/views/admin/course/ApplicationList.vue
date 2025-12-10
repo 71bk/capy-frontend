@@ -207,29 +207,46 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end;
 }
+
+:deep(.el-table) {
+  --el-table-header-bg-color: #F9FAFB;
+  --el-table-row-hover-bg-color: #F5F3FF;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
 :deep(.tbody-cell .cell) {
   display: flex;
   justify-content: center;
-  padding: 8px 0;
+  padding: 16px 12px;
 }
+
 :deep(.table-row .cell) {
-  padding: 12px 0;
+  padding: 16px 12px;
 }
 
 :deep(.table-head .cell) {
-  font-size: 18px;
+  font-size: 14px;
+  font-weight: 600;
   text-align: center;
-  padding: 4px 0 28px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  color: #374151;
+  padding: 16px 12px;
 }
+
 .index {
   font-style: italic;
-  font-weight: 500;
-  font-size: 24px;
-  color: #909399;
-  opacity: 0.3;
-  transition: opacity 0.2s;
+  font-weight: 600;
+  font-size: 20px;
+  color: #9CA3AF;
+  opacity: 0.4;
+  transition: all 0.2s ease;
 }
+
 .table-row:hover .index {
   opacity: 1;
+  color: #4F46E5;
 }
 </style>
+

@@ -33,98 +33,98 @@ const handleUserCommand = (command) => {
 <template>
   <div class="common-layout">
     <el-container>
-      <el-aside :style="{ width: isCollapse ? '200px' : '64px' }">
-        <el-menu background-color="#545c64" :collapse="!isCollapse" class="aaa">
-          <router-link :to="{ name: 'adminWorkspace' }">
-            <el-menu-item index="adminWorkspace">
-              <el-icon><House /></el-icon>
-              <template #title>工作台</template>
-            </el-menu-item>
-          </router-link>
-          <el-sub-menu index="course">
-            <template #title>
-              <el-icon><Edit /></el-icon>
-              <span>課程管理</span>
-            </template>
-            <RouterLink :to="{ name: 'course_application_list' }">
-              <el-menu-item index="course_application_list">
-                <!-- <el-icon><Collection /></el-icon> -->
-                <template #title>上架申請列表</template>
+      <el-aside :style="{ width: isCollapse ? '220px' : '72px' }">
+        <!-- Logo Header (only show when expanded) -->
+        <div v-if="isCollapse" class="sidebar-header">
+          <div class="logo-area">
+            <span class="logo-text">CapyCourse</span>
+          </div>
+        </div>
+
+        <!-- Menu -->
+        <el-scrollbar class="sidebar-menu-scrollbar">
+          <el-menu :collapse="!isCollapse" class="admin-sidebar-menu">
+            <router-link :to="{ name: 'adminWorkspace' }">
+              <el-menu-item index="adminWorkspace">
+                <el-icon><House /></el-icon>
+                <template #title>工作台</template>
+              </el-menu-item>
+            </router-link>
+            <el-sub-menu index="course">
+              <template #title>
+                <el-icon><Edit /></el-icon>
+                <span>課程管理</span>
+              </template>
+              <RouterLink :to="{ name: 'course_application_list' }">
+                <el-menu-item index="course_application_list">
+                  <template #title>上架申請列表</template>
+                </el-menu-item>
+              </RouterLink>
+              <RouterLink :to="{ name: 'courseManagement' }">
+                <el-menu-item index="courseManagement">
+                  <template #title>課程狀態管理</template>
+                </el-menu-item>
+              </RouterLink>
+            </el-sub-menu>
+            <el-sub-menu index="user">
+              <template #title>
+                <el-icon><UserFilled /></el-icon>
+                <span>用戶管理</span>
+              </template>
+              <RouterLink :to="{ name: 'instructor_application_list' }">
+                <el-menu-item index="instructor_application_list">
+                  <template #title>教師申請列表</template>
+                </el-menu-item>
+              </RouterLink>
+              <RouterLink :to="{ name: 'userManagement' }">
+                <el-menu-item index="userManagement">
+                  <template #title>用戶狀態管理</template>
+                </el-menu-item>
+              </RouterLink>
+            </el-sub-menu>
+            <el-sub-menu index="platform">
+              <template #title>
+                <el-icon><Management /></el-icon>
+                <span>平台管理</span>
+              </template>
+              <RouterLink :to="{ name: 'platform_announcement' }">
+                <el-menu-item index="platform_announcement">
+                  <template #title>平台公告</template>
+                </el-menu-item>
+              </RouterLink>
+              <RouterLink :to="{ name: 'category_management' }">
+                <el-menu-item index="category_management">
+                  <template #title>分類管理</template>
+                </el-menu-item>
+              </RouterLink>
+            </el-sub-menu>
+            <RouterLink :to="{ name: 'datastatic' }">
+              <el-menu-item index="datastatic">
+                <el-icon><DataAnalysis /></el-icon>
+                <template #title>數據分析</template>
               </el-menu-item>
             </RouterLink>
-            <RouterLink :to="{ name: 'courseManagement' }">
-              <el-menu-item index="courseManagement">
-                <!-- <el-icon><Operation /></el-icon> -->
-                <template #title>課程狀態管理</template>
+            <RouterLink :to="{ name: 'operationrecord' }">
+              <el-menu-item index="operationrecord">
+                <el-icon><SetUp /></el-icon>
+                <template #title>操作紀錄查詢</template>
               </el-menu-item>
             </RouterLink>
-          </el-sub-menu>
-          <el-sub-menu index="user">
-            <template #title>
-              <el-icon><UserFilled /></el-icon>
-              <span>用戶管理</span>
-            </template>
-            <RouterLink :to="{ name: 'instructor_application_list' }">
-              <el-menu-item index="instructor_application_list">
-                <!-- <el-icon><List /></el-icon> -->
-                <template #title>教師申請列表</template>
-              </el-menu-item>
-            </RouterLink>
-            <RouterLink :to="{ name: 'userManagement' }">
-              <el-menu-item index="userManagement">
-                <!-- <el-icon><SetUp /></el-icon> -->
-                <template #title>用戶狀態管理</template>
-              </el-menu-item>
-            </RouterLink>
-          </el-sub-menu>
-          <el-sub-menu index="platform">
-            <template #title>
-              <el-icon><Management /></el-icon>
-              <span>平台管理</span>
-            </template>
-            <RouterLink :to="{ name: 'platform_announcement' }">
-              <el-menu-item index="platform_announcement">
-                <!-- <el-icon><Document /></el-icon> -->
-                <template #title>平台公告</template>
-              </el-menu-item>
-            </RouterLink>
-            <RouterLink :to="{ name: 'category_management' }">
-              <el-menu-item index="category_management">
-                <!-- <el-icon><FolderAdd /></el-icon> -->
-                <template #title>分類管理</template>
-              </el-menu-item>
-            </RouterLink>
-          </el-sub-menu>
-          <RouterLink :to="{ name: 'datastatic' }">
-            <el-menu-item index="datastatic">
-              <el-icon><DataAnalysis /></el-icon>
-              <template #title>數據分析</template>
-            </el-menu-item>
-          </RouterLink>
-          <RouterLink :to="{ name: 'operationrecord' }">
-            <el-menu-item index="operationrecord">
-              <el-icon><SetUp /></el-icon>
-              <template #title>操作紀錄查詢</template>
-            </el-menu-item>
-          </RouterLink>
-        </el-menu>
-        <div>
-          <el-switch v-model="isCollapse" active-action-icon="View" inactive-action-icon="Hide">
-            <template #active-action>
-              <el-icon><Right /></el-icon>
-            </template>
-            <template #inactive-action>
-              <el-icon><Back /></el-icon>
-            </template>
-          </el-switch>
-          <p style="text-align: center; color: #fff; width: 60px; font-size: 12px">
-            {{ isCollapse ? "展開" : "收合" }}
-          </p>
+          </el-menu>
+        </el-scrollbar>
+
+        <!-- Toggle Button -->
+        <div class="sidebar-footer">
+          <button class="toggle-btn" @click="isCollapse = !isCollapse" :title="isCollapse ? '收合側邊欄' : '展開側邊欄'">
+            <el-icon :size="18">
+              <component :is="isCollapse ? 'DArrowLeft' : 'DArrowRight'" />
+            </el-icon>
+          </button>
         </div>
       </el-aside>
       <el-container
-        style="transition: margin 0.5s"
-        :style="{ 'margin-left': isCollapse ? '200px' : '64px' }"
+        style="transition: margin 0.3s ease"
+        :style="{ 'margin-left': isCollapse ? '220px' : '72px' }"
       >
         <el-scrollbar ref="scrollbarRef" style="height: 100vh; width: 100%">
           <el-header>
@@ -163,103 +163,294 @@ const handleUserCommand = (command) => {
   </div>
 </template>
 <style scoped>
+/* ==================== Sidebar Container ==================== */
+.el-aside {
+  overflow: hidden;
+  transition: width 0.3s ease;
+  height: 100vh;
+  position: fixed;
+  background: linear-gradient(180deg, #1E1B4B 0%, #312E81 50%, #1E1B4B 100%);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==================== Logo Header ==================== */
+.sidebar-header {
+  padding: 20px 16px;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: 1px;
+  background: linear-gradient(135deg, #E0E7FF 0%, #A5B4FC 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.logo-text-short {
+  font-size: 22px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #E0E7FF 0%, #A5B4FC 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Fade transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* ==================== Menu Scrollbar ==================== */
+.sidebar-menu-scrollbar {
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ==================== Menu Items ==================== */
+:deep(.el-menu) {
+  border-right: 0;
+  background-color: transparent;
+  padding: 12px 0;
+  width: 100% !important;
+}
+
+:deep(.el-menu--collapse) {
+  width: 72px !important;
+}
+
 :deep(.el-menu-item) {
-  color: inherit;
+  color: rgba(224, 231, 255, 0.85);
+  border-radius: 10px;
+  margin: 4px 12px;
+  height: 48px;
+  line-height: 48px;
+  transition: all 0.2s ease;
 }
+
+/* Fix collapsed menu icon centering - unify padding for both trigger types */
+:deep(.el-menu--collapse .el-menu-tooltip__trigger) {
+  padding: 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+:deep(.el-menu--collapse .el-sub-menu__title) {
+  padding: 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+:deep(.el-menu--collapse .el-menu-item .el-icon),
+:deep(.el-menu--collapse .el-sub-menu__title .el-icon) {
+  margin: 0 !important;
+}
+
+:deep(.el-menu-item:hover) {
+  background-color: rgba(99, 102, 241, 0.25);
+  color: #FFFFFF;
+}
+
+:deep(.el-menu-item .el-icon) {
+  font-size: 20px;
+}
+
 :deep(.el-sub-menu__title) {
-  color: inherit;
+  color: rgba(224, 231, 255, 0.85);
+  border-radius: 10px;
+  margin: 4px 12px;
+  height: 48px;
+  line-height: 48px;
+  transition: all 0.2s ease;
 }
+
+:deep(.el-menu--collapse .el-sub-menu__title) {
+  margin: 4px auto !important;
+  padding: 0 !important;
+  width: 52px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+:deep(.el-menu--collapse .el-sub-menu__title .el-icon) {
+  margin: 0 !important;
+}
+
+:deep(.el-menu--collapse .el-sub-menu__title .el-sub-menu__icon-arrow) {
+  display: none !important;
+}
+
+:deep(.el-sub-menu__title:hover) {
+  background-color: rgba(99, 102, 241, 0.25);
+  color: #FFFFFF;
+}
+
+:deep(.el-sub-menu__title .el-icon) {
+  font-size: 20px;
+}
+
 :deep(.el-sub-menu:has(.router-link-active) > .el-sub-menu__title) {
-  color: #6cf;
+  color: #A5B4FC;
 }
+
 .router-link-active {
-  color: #6cf;
+  color: #A5B4FC;
 }
+
+.router-link-active .el-menu-item {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(129, 140, 248, 0.2) 100%);
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
 .el-menu--popup li {
-  color: #fff;
+  color: #374151;
 }
+
 .el-menu--popup .router-link-active .el-menu-item {
-  color: #6cf;
+  color: #4F46E5;
+  background-color: #EEF2FF;
 }
+
+/* ==================== Sidebar Footer ==================== */
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid rgba(99, 102, 241, 0.2);
+  display: flex;
+  justify-content: center;
+}
+
+.toggle-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+  color: #FFFFFF;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+.toggle-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.5);
+}
+
+.toggle-btn:active {
+  transform: scale(0.95);
+}
+
+/* ==================== Header ==================== */
 :deep(.el-header) {
-  border-bottom: 1px solid #d1d9e1;
-  background-color: #6cf;
-  /* padding: 24px 24px !important; */
-  /* height: 80px; */
+  border-bottom: 1px solid #E5E7EB;
+  background-color: #FFFFFF;
   height: auto;
-  padding: 8px 24px;
+  padding: 12px 28px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
-.el-aside {
-  overflow: hidden;
-  transition: width 0.5s;
-  height: 100vh;
-  position: fixed;
-  background-color: #545c64;
-}
+
+/* ==================== Main Content ==================== */
 .el-main {
-  background-color: #f0f3f5;
+  background-color: #F5F7FA;
   min-height: 100vh;
-  /* overflow-x: hidden; */
+  padding: 24px 32px;
 }
+
 .main-container {
-  max-width: 1296px;
+  max-width: 1320px;
   margin: 0 auto;
 }
+
+/* ==================== Footer ==================== */
 .el-footer {
   text-align: center;
-  color: #667f99;
-  font-size: 14px;
+  color: #6B7280;
+  font-size: 13px;
   font-weight: 400;
-  background-color: #f0f3f5;
+  background-color: #F5F7FA;
+  padding: 24px;
 }
-:deep(.el-menu) {
-  border-right: 0;
-  color: aliceblue;
-}
-.el-switch {
-  margin-top: 50px;
-  margin-left: 10px;
-}
+
+/* ==================== User Header Actions ==================== */
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
+
 .user-chip {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 4px 12px;
-  border-radius: 16px;
-  background-color: #f5fbff;
-  color: #304455;
+  padding: 6px 16px;
+  border-radius: 50px;
+  background-color: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  color: #374151;
   font-weight: 500;
   cursor: pointer;
   outline: none;
-  /* transition: box-shadow 0.2s; */
+  transition: all 0.2s ease;
 }
-/* .user-chip:hover { */
-/* box-shadow: 0 2px 10px #00000015; */
-/* transform: translateY(-1px); */
-/* } */
+
+.user-chip:hover {
+  background-color: #F3F4F6;
+  border-color: #D1D5DB;
+}
+
 .user-name {
   max-width: 180px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .arrow {
   font-size: 14px;
-  color: #6c7a89;
+  color: #6B7280;
 }
+
+/* ==================== Dropdown Menu ==================== */
 :deep(.el-dropdown-menu__item) {
-  padding: 12px;
-  font-size: 16px;
-  letter-spacing: 0.5px;
+  padding: 14px 20px;
+  font-size: 15px;
+  letter-spacing: 0.3px;
   justify-content: center;
   font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+:deep(.el-dropdown-menu__item:hover) {
+  background-color: #EEF2FF;
+  color: #4F46E5;
 }
 </style>
+
+

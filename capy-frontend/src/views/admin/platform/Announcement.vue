@@ -227,7 +227,7 @@ onMounted(() => {
     >
       <div style="display: flex; align-items: center; gap: 12px">
         <span style="font-weight: 500; font-size: 18px">發布人 :</span>
-        <el-radio-group v-model="currentAnnouncementType" size="large" fill="#6cf" @change="handleTypeChange">
+        <el-radio-group v-model="currentAnnouncementType" size="large" fill="#4F46E5" @change="handleTypeChange">
           <el-radio-button label="All" value="" />
           <el-radio-button label="平台" value="platform" />
           <el-radio-button label="講師" value="instructor" />
@@ -279,68 +279,93 @@ onMounted(() => {
 .message-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   margin-top: 20px;
 }
+
 .message-list-item {
-  padding: 10px 20px;
+  padding: 20px 24px;
   position: relative;
   display: flex;
-  gap: 20px;
-  border-radius: 8px;
+  gap: 24px;
+  border-radius: 12px;
   justify-content: space-between;
   align-items: center;
-  background-color: #fcfcfd;
-  border-left: 5px solid rgb(216, 230, 237);
-  /* transition:; */
+  background-color: #FFFFFF;
+  border-left: 4px solid #C7D2FE;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
 }
-.dialog-body {
-  padding: 24px;
-  font-size: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  /* text-align: center; */
-}
-.detail-label {
-  font-weight: 500;
-  font-size: 16px;
-  margin-right: 8px;
-}
-.dialog-heading {
-  text-align: center;
-  padding: 12px 0;
-  font-weight: 500;
-  font-size: 24px;
-}
+
 .message-list-item:hover {
-  transform: translateY(-2px);
+  transform: translateX(4px);
+  border-left-color: #4F46E5;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
   cursor: pointer;
 }
-.checkout {
+
+.dialog-body {
+  padding: 24px;
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detail-label {
+  font-weight: 600;
   font-size: 14px;
-  color: rgb(153, 173, 183);
+  color: #6B7280;
+  margin-right: 12px;
 }
+
+.dialog-heading {
+  text-align: center;
+  padding: 16px 0;
+  font-weight: 600;
+  font-size: 22px;
+  color: #1F2937;
+}
+
+.checkout {
+  font-size: 13px;
+  color: #9CA3AF;
+  white-space: nowrap;
+}
+
 .message-title {
-  font-size: 20px;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1F2937;
 }
+
 .end-text {
   margin-top: 12px;
   text-align: center;
-  color: rgb(153, 173, 183);
+  color: #9CA3AF;
 }
+
 .add-btn {
   padding: 18px 24px;
 }
+
 .empty-text {
   text-align: center;
-  color: rgb(153, 173, 183);
-  padding: 48px 0;
-  font-size: 16px;
+  color: #9CA3AF;
+  padding: 64px 0;
+  font-size: 15px;
 }
+
 .pagination-btn {
   margin-top: 48px;
   display: flex;
 }
+
+/* Override radio button fill color */
+:deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
+  background-color: #4F46E5 !important;
+  border-color: #4F46E5 !important;
+  box-shadow: -1px 0 0 0 #4F46E5 !important;
+}
 </style>
+

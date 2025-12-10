@@ -344,8 +344,9 @@ onMounted(() => {
 .filter-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: wrap;
+  padding-bottom: 8px;
 }
 
 .pagination-btn {
@@ -354,33 +355,72 @@ onMounted(() => {
   justify-content: flex-end;
 }
 
+:deep(.el-table) {
+  --el-table-header-bg-color: #F9FAFB;
+  --el-table-row-hover-bg-color: #F5F3FF;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
 :deep(.tbody-cell .cell) {
   display: flex;
   justify-content: center;
-  padding: 12px 0;
+  padding: 16px 12px;
 }
 
 :deep(.table-head .cell) {
-  font-size: 18px;
+  font-size: 14px;
+  font-weight: 600;
   text-align: center;
-  padding: 4px 0 28px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  color: #374151;
+  padding: 16px 12px;
 }
 
 .index {
   font-style: italic;
-  font-weight: 500;
-  font-size: 24px;
-  color: #909399;
-  opacity: 0.3;
-  transition: opacity 0.2s;
+  font-weight: 600;
+  font-size: 20px;
+  color: #9CA3AF;
+  opacity: 0.4;
+  transition: all 0.2s ease;
 }
 
 .table-row:hover .index {
   opacity: 1;
+  color: #4F46E5;
 }
 
 .published-at {
   font-style: italic;
   font-weight: 500;
+  color: #6B7280;
+}
+
+/* Status Tag Styles */
+:deep(.el-tag--success) {
+  background-color: #D1FAE5;
+  color: #059669;
+  border-color: #A7F3D0;
+}
+
+:deep(.el-tag--warning) {
+  background-color: #FEF3C7;
+  color: #D97706;
+  border-color: #FDE68A;
+}
+
+:deep(.el-tag--danger) {
+  background-color: #FEE2E2;
+  color: #DC2626;
+  border-color: #FECACA;
+}
+
+:deep(.el-tag--info) {
+  background-color: #F3F4F6;
+  color: #4B5563;
+  border-color: #E5E7EB;
 }
 </style>
+
