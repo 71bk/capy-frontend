@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import OderRecordTable from "./OderRecordTable.vue";
+import OderRecordTable from "./OrderRecordTable.vue";
 import GradientLineChart from "@/components/admin/GradientLineChart.vue";
 import RevenuePieChart from "@/components/admin/RevenuePieChart.vue";
 import UserGrowthChart from "@/components/admin/UserGrowthChart.vue";

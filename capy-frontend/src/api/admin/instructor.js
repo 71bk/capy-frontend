@@ -34,7 +34,7 @@ export const approveInstructorApplication = (applicationId) => {
 export const rejectInstructorApplication = (applicationId, rejectedReason) => {
   return axios.post(
     `/admin/instructors/applications/${applicationId}/reject`,
-    JSON.stringify(rejectedReason),
+    rejectedReason,
     { headers: { "Content-Type": "application/json" } }
   );
 };
