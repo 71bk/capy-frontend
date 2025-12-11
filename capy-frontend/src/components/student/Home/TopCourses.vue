@@ -25,6 +25,21 @@ const props = defineProps({
 // 後端返回的格式已經是熱門課程，直接使用
 const displayCourses = computed(() => props.courses)
 
+// 限制顯示的標籤數量
+const maxTags = 3
+
+// 取得可見的標籤
+const getVisibleTags = (tags) => {
+  if (!tags || tags.length === 0) return []
+  return tags.slice(0, maxTags)
+}
+
+// 計算剩餘標籤數量
+const getRemainingTagsCount = (tags) => {
+  if (!tags || tags.length <= maxTags) return 0
+  return tags.length - maxTags
+}
+
 const goToCourse = (id) => {
   router.push(`/courses/${id}`)
 }
@@ -165,12 +180,15 @@ const isInWishlist = (courseId) => {
           <!-- Tags below title -->
           <div class="tags-container" v-if="course.tags && course.tags.length > 0">
             <span
-              v-for="(tag, index) in course.tags"
+              v-for="(tag, index) in getVisibleTags(course.tags)"
               :key="index"
               class="tag-item"
               @click="handleTagClick($event, tag)"
             >
               {{ tag }}
+            </span>
+            <span v-if="getRemainingTagsCount(course.tags) > 0" class="tag-more">
+              +{{ getRemainingTagsCount(course.tags) }}
             </span>
           </div>
 
@@ -418,6 +436,18 @@ const isInWishlist = (courseId) => {
   background: rgba(0, 191, 165, 0.15);
   border-color: var(--capy-primary);
   transform: translateY(-1px);
+}
+
+.tag-more {
+  display: inline-block;
+  padding: 3px 10px;
+  background: rgba(144, 147, 153, 0.1);
+  color: var(--capy-text-secondary);
+  font-size: var(--capy-font-size-xs);
+  font-weight: var(--capy-font-weight-semibold);
+  border-radius: 12px;
+  border: 1px solid rgba(144, 147, 153, 0.2);
+  cursor: default;
 }
 
 .course-instructor {

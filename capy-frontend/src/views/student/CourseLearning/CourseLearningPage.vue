@@ -337,6 +337,7 @@ import {
   buildHlsUrl,
   triggerAttachmentDownload
 } from '@/api/student/courseLearning'
+import { rateCourse } from '@/api/student/studentCenter'
 
 const route = useRoute()
 const router = useRouter()
@@ -814,8 +815,21 @@ const handleRatingTextClick = () => {
  */
 const handleReviewSubmitted = async (reviewData) => {
   try {
-    // 模擬 API 呼叫
-    await new Promise(resolve => setTimeout(resolve, 500))
+    // 判斷是新增還是更新評分
+    const isUpdate = userRating.value !== null && userRating.value !== undefined && userRating.value > 0
+
+    if (isUpdate) {
+      // 如果已經評過分，顯示提示（因為新 API 不支援更新）
+      ElMessage.warning('您已經評過此課程，無法重複評分')
+      return
+    }
+
+    // 使用新的 rateCourse API 提交評分
+    await rateCourse({
+      courseId: courseData.value.courseId,
+      rating: reviewData.rating,
+      comment: reviewData.comment
+    })
 
     // 更新本地狀態
     userRating.value = reviewData.rating
@@ -824,7 +838,17 @@ const handleReviewSubmitted = async (reviewData) => {
     ElMessage.success('評價提交成功！感謝您的反饋')
   } catch (error) {
     console.error('提交評價失敗:', error)
-    ElMessage.error('評價提交失敗，請稍後再試')
+
+    // 處理特定錯誤訊息
+    if (error.response?.status === 400) {
+      ElMessage.error('已購買後才能評價')
+    } else if (error.response?.status === 409) {
+      ElMessage.error('已經評過此課程')
+    } else if (error.response?.status === 401 || error.response?.status === 403) {
+      ElMessage.error('請先登入')
+    } else {
+      ElMessage.error('評價提交失敗，請稍後再試')
+    }
   }
 }
 

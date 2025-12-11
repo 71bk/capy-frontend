@@ -68,7 +68,7 @@ import request from '@/utils/http'
  */
 export const fetchTeacherDetail = (instructorId, params = {}) => {
   return request({
-    url: `/explore/${instructorId}`,
+    url: `/explore/instructor/${instructorId}`,
     method: 'GET',
     params: {
       sort: params.sort ?? 'popular',

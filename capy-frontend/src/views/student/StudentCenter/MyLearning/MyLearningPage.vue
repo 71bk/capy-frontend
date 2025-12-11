@@ -80,6 +80,7 @@ import { ElMessage } from 'element-plus'
 import { useStudentCenterStore } from '@/stores/studentCenter'
 import MyLearningCourseCard from '@/components/student/StudentCenter/MyLearning/MyLearningCourseCard.vue'
 import CourseRatingDialog from '@/components/student/StudentCenter/MyLearning/CourseRatingDialog.vue'
+import { rateCourse } from '@/api/student/studentCenter'
 
 const router = useRouter()
 const studentCenterStore = useStudentCenterStore()
@@ -236,15 +237,21 @@ const handleReviewSubmitted = async (reviewData) => {
     const isUpdate = course && course.rating !== null && course.rating !== undefined
 
     if (isUpdate) {
+      // 使用舊的 API 更新評分（基於 progressId）
       await studentCenterStore.updateRating(selectedProgressId.value, {
         rating: reviewData.rating,
         comment: reviewData.comment
       })
     } else {
-      await studentCenterStore.submitRating(selectedProgressId.value, {
+      // 使用新的 API 提交評分（基於 courseId）
+      await rateCourse({
+        courseId: selectedCourseInfo.value.courseId,
         rating: reviewData.rating,
         comment: reviewData.comment
       })
+
+      // 重新載入課程列表以更新評分狀態
+      await loadMyLearning()
     }
 
     // Reset dialog state
@@ -256,7 +263,17 @@ const handleReviewSubmitted = async (reviewData) => {
     ElMessage.success(isUpdate ? '評價已更新' : '評價已提交')
   } catch (error) {
     console.error('提交評價失敗:', error)
-    ElMessage.error('提交評價失敗，請稍後再試')
+
+    // 處理特定錯誤訊息
+    if (error.response?.status === 400) {
+      ElMessage.error('已購買後才能評價')
+    } else if (error.response?.status === 409) {
+      ElMessage.error('已經評過此課程')
+    } else if (error.response?.status === 401 || error.response?.status === 403) {
+      ElMessage.error('請先登入')
+    } else {
+      ElMessage.error('提交評價失敗，請稍後再試')
+    }
   }
 }
 

@@ -9,18 +9,31 @@ import instance from "../../utils/http.js";
  *
  * @param {Object} applicationData - 申請資料物件
  * @param {string} applicationData.fullName - 真實姓名（必填）
- * @param {string} applicationData.resume - 履歷文字（必填）
+ * @param {string} applicationData.resume - 履歷文字/個人簡介（必填）
  * @param {string} applicationData.bankCode - 銀行代碼（必填）
  * @param {string} applicationData.accountNumber - 帳號（必填）
+ * @param {Array<Object>} applicationData.workExperience - 工作經驗陣列（可選）
+ * @param {string} applicationData.workExperience[].companyName - 公司名稱
+ * @param {string} applicationData.workExperience[].jobTitle - 職位名稱
+ * @param {string} applicationData.workExperience[].startDate - 開始日期 (YYYY-MM-DD)
+ * @param {string} applicationData.workExperience[].endDate - 結束日期 (YYYY-MM-DD)
  * @param {File[]} certificates - 證明文件陣列（可選），最多 5 份，每份 ≤ 10MB
  * @returns {Promise} 回傳申請結果
  * @example
  * // 使用範例
  * const applicationData = {
  *   fullName: "王小明",
- *   resume: "5年後端經驗",
+ *   resume: "我有5年的後端開發經驗，專精於 Java Spring Boot...",
  *   bankCode: "822",
- *   accountNumber: "1234567890"
+ *   accountNumber: "1234567890",
+ *   workExperience: [
+ *     {
+ *       companyName: "ABC科技公司",
+ *       jobTitle: "資深後端工程師",
+ *       startDate: "2020-01-01",
+ *       endDate: "2023-12-01"
+ *     }
+ *   ]
  * };
  * const certificates = [file1, file2]; // File 物件陣列
  *
@@ -131,6 +144,65 @@ export const becomeTeacher = (applicationData, certificates = []) => {
  */
 export const getApplicationStatus = () => {
   return instance.get('/instructor-application/status');
+};
+
+/**
+ * 取得最新的講師申請記錄
+ * GET /api/become-teacher/latest
+ *
+ * 查詢當前用戶最新的講師申請狀態和詳細資訊
+ * 需要 JWT 認證
+ *
+ * @returns {Promise} 回傳最新申請記錄
+ * @example
+ * // Response 範例（待審核）:
+ * {
+ *   "code": 200,
+ *   "msg": "success",
+ *   "data": {
+ *     "applicationId": 123,
+ *     "status": "pending",  // pending（待審核）| approved（已通過）| rejected（已拒絕）
+ *     "certificates": [
+ *       {
+ *         "certificateId": 1,
+ *         "fileName": "cert1.pdf",
+ *         "filePath": "resources/certificates/123/<stored-name>"
+ *       }
+ *     ],
+ *     "workExperiences": [
+ *       {
+ *         "companyName": "ABC Corp",
+ *         "jobTitle": "Senior Engineer",
+ *         "startDate": "2022-01-01",
+ *         "endDate": "2024-06-30"
+ *       }
+ *     ],
+ *     "rejectionReason": null  // 未被拒絕時為 null
+ *   }
+ * }
+ *
+ * // Response 範例（被拒絕）:
+ * {
+ *   "code": 200,
+ *   "msg": "success",
+ *   "data": {
+ *     "applicationId": 123,
+ *     "status": "rejected",
+ *     "certificates": [ ... ],
+ *     "workExperiences": [ ... ],
+ *     "rejectionReason": "缺少必要文件"  // 拒絕原因
+ *   }
+ * }
+ *
+ * // Response 範例（無申請記錄）:
+ * {
+ *   "code": 200,
+ *   "msg": "success",
+ *   "data": null
+ * }
+ */
+export const getLatestApplication = () => {
+  return instance.get('/become-teacher/latest');
 };
 
 /**

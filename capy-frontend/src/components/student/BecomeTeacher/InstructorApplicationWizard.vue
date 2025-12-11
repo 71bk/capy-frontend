@@ -371,14 +371,14 @@
         @click="handleSubmit"
         class="submit-button"
       >
-        {{ submitting ? '正在上傳文件...' : '送出申請' }}
+        {{ submitting ? '正在上傳文件...' : (isResubmission ? '重新送出' : '送出申請') }}
       </el-button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
@@ -391,6 +391,21 @@ import {
   Plus
 } from '@element-plus/icons-vue'
 import { becomeTeacher } from '@/api/student/becomTeacher.js'
+
+// Props
+const props = defineProps({
+  initialData: {
+    type: Object,
+    default: null
+  },
+  isResubmission: {
+    type: Boolean,
+    default: false
+  }
+})
+
+// Emits
+const emit = defineEmits(['submit-success'])
 
 // Refs
 const router = useRouter()
@@ -409,6 +424,34 @@ const applicationForm = ref({
   resume: '',
   work_experience: [],
   files: []
+})
+
+// 初始化表單資料（用於 REJECTED 狀態的預填）
+const initializeFormData = () => {
+  if (props.initialData) {
+    applicationForm.value = {
+      full_name: props.initialData.full_name || '',
+      bank_code: props.initialData.bank_code || '',
+      account_number: props.initialData.account_number || '',
+      resume: props.initialData.resume || '',
+      work_experience: props.initialData.work_experience || [],
+      files: props.initialData.certificates || []
+    }
+  }
+}
+
+// 監聽 initialData 變化
+watch(() => props.initialData, (newData) => {
+  if (newData) {
+    initializeFormData()
+  }
+}, { immediate: true })
+
+// 組件掛載時初始化
+onMounted(() => {
+  if (props.initialData) {
+    initializeFormData()
+  }
 })
 
 // Validation Rules - Step 1: Profile
@@ -584,7 +627,9 @@ const handleSubmit = async () => {
       {
         confirmButtonText: '確定送出',
         cancelButtonText: '再檢查一次',
-        type: 'warning'
+        type: 'warning',
+        customClass: 'instructor-application-confirm-dialog',
+        center: false
       }
     )
 
@@ -593,9 +638,17 @@ const handleSubmit = async () => {
     // Prepare application data
     const applicationData = {
       fullName: applicationForm.value.full_name,
-      resume: JSON.stringify(applicationForm.value.work_experience), // Serialize work experience to JSON
+      resume: applicationForm.value.resume, // 傳送個人簡介文字
       bankCode: applicationForm.value.bank_code,
-      accountNumber: applicationForm.value.account_number
+      accountNumber: applicationForm.value.account_number,
+      // 將工作經驗陣列的欄位名稱轉換為後端期待的 camelCase 格式
+      workExperience: applicationForm.value.work_experience.map(exp => ({
+        companyName: exp.company,    // company → companyName
+        jobTitle: exp.position,      // position → jobTitle
+        // 後端期待完整日期格式 yyyy-MM-dd（LocalDate），前端 date picker 回傳 yyyy-MM，需補上 -01
+        startDate: exp.start_date ? `${exp.start_date}-01` : null,
+        endDate: exp.end_date ? `${exp.end_date}-01` : null
+      }))
     }
 
     // Prepare certificate files
@@ -612,7 +665,7 @@ const handleSubmit = async () => {
 
     // Redirect to success page or instructor landing
     setTimeout(() => {
-      router.push('/instructor-landing')
+      router.push('/instructor/landing')
     }, 1500)
 
   } catch (error) {

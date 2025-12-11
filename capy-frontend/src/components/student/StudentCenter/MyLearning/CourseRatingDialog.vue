@@ -21,7 +21,7 @@
         <label class="section-label">您的評分</label>
         <el-rate
           v-model="rating"
-          :size="32"
+          size="large"
           :colors="['#FFD700', '#FFD700', '#FFD700']"
           show-text
           :texts="['非常差', '差', '普通', '好', '非常好']"

@@ -373,6 +373,61 @@ export const unlinkGoogleAccount = (data) => {
   })
 }
 
+/**
+ * 評分課程（需已購買且未評過）
+ *
+ * API 規格：
+ * - 路徑：POST /api/student/course/rate
+ * - 需登入：必須帶上 JWT（cookie 或 Bearer），未登入會 401/403
+ * - Request Body（JSON）：
+ *   - courseId（必填，Long）- 課程 ID
+ *   - rating（必填，1~5）- 評分
+ *   - comment（選填，文字）- 評論內容
+ * - Response：Result<Void>，成功回 200，data 為 null
+ * - 錯誤情況：
+ *   - 未購買該課程 → 400，訊息「已購買後才能評價」
+ *   - 已經評過 → 409，訊息「已經評過此課程」
+ *   - 未登入/Token 失效 → 401/403
+ *
+ * @param {Object} data - 評分資料
+ * @param {number} data.courseId - 課程 ID（必填）
+ * @param {number} data.rating - 評分 1-5（必填）
+ * @param {string} [data.comment] - 評論內容（選填）
+ *
+ * @returns {Promise<{
+ *   code: number,
+ *   msg: string,
+ *   data: null,
+ *   path: string | null
+ * }>}
+ *
+ * @example
+ * // 評分課程
+ * try {
+ *   const result = await rateCourse({
+ *     courseId: 123,
+ *     rating: 5,
+ *     comment: '很實用！'
+ *   })
+ *   console.log('評分成功')
+ * } catch (error) {
+ *   if (error.response?.status === 400) {
+ *     console.error('未購買該課程，無法評價')
+ *   } else if (error.response?.status === 409) {
+ *     console.error('已經評過此課程')
+ *   } else if (error.response?.status === 401 || error.response?.status === 403) {
+ *     console.error('未登入或 Token 失效，請重新登入')
+ *   }
+ * }
+ */
+export const rateCourse = (data) => {
+  return request({
+    url: '/student/course/rate',
+    method: 'POST',
+    data
+  })
+}
+
 // 匯出所有 API 函數
 export default {
   fetchStudentProfile,
@@ -383,5 +438,6 @@ export default {
   updateCourseRating,
   changeStudentPassword,
   deleteStudentAccount,
-  unlinkGoogleAccount
+  unlinkGoogleAccount,
+  rateCourse
 }
