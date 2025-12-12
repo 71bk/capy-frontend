@@ -165,13 +165,13 @@ const handleSearch = () => {
 onMounted(async () => {
   // 注意：userStore.init() 已在 App.vue 和 router 中呼叫，這裡不需要重複呼叫
 
-  // 只有在已登入時才載入通知
+  // 只有在已登入時才載入願望清單
   if (userStore.isAuthenticated) {
     // 從 localStorage 載入願望清單（快速顯示，不呼叫 API）
     wishlistStore.loadFromStorage()
 
-    // 載入通知資料
-    notificationStore.fetchNotifications()
+    // 通知資料已由 App.vue 透過 SSE 自動維護，不需要在這裡重複載入
+    // notificationStore 的 unreadCount 和 notifications 會自動更新
   }
 })
 

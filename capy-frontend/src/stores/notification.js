@@ -55,11 +55,19 @@ export const useNotificationStore = defineStore('notification', () => {
   const unreadCount = ref(0)
 
   /**
-   * 最近的通知（用於 popover 顯示）
-   * 限制顯示最新的 5 條
+   * 未讀通知列表
+   * 只包含未讀的通知
+   */
+  const unreadNotifications = computed(() => {
+    return notifications.value.filter(n => !n.isRead)
+  })
+
+  /**
+   * 最近的未讀通知（用於 popover 顯示）
+   * 限制顯示最新的 5 條未讀通知
    */
   const recentNotifications = computed(() => {
-    return notifications.value.slice(0, 5)
+    return unreadNotifications.value.slice(0, 5)
   })
 
   // ===== Actions =====
@@ -71,12 +79,12 @@ export const useNotificationStore = defineStore('notification', () => {
     // 記錄原始狀態以便回滾
     const originalStates = notifications.value.map(n => ({
       id: n.id,
-      is_read: n.is_read
+      isRead: n.isRead
     }))
 
     // 先更新本地狀態（樂觀更新）
     notifications.value.forEach(notification => {
-      notification.is_read = true
+      notification.isRead = true
     })
 
     const originalUnreadCount = unreadCount.value
@@ -89,10 +97,10 @@ export const useNotificationStore = defineStore('notification', () => {
       console.error('標記所有通知為已讀失敗:', error)
 
       // 回滾本地狀態
-      originalStates.forEach(({ id, is_read }) => {
+      originalStates.forEach(({ id, isRead }) => {
         const notification = notifications.value.find(n => n.id === id)
         if (notification) {
-          notification.is_read = is_read
+          notification.isRead = isRead
         }
       })
       unreadCount.value = originalUnreadCount
@@ -110,11 +118,11 @@ export const useNotificationStore = defineStore('notification', () => {
     if (!notification) return
 
     // 如果已經是已讀狀態，直接返回
-    if (notification.is_read) return
+    if (notification.isRead) return
 
     // 先更新本地狀態（樂觀更新）
-    const wasRead = notification.is_read
-    notification.is_read = true
+    const wasRead = notification.isRead
+    notification.isRead = true
 
     // 更新未讀數量
     if (unreadCount.value > 0) {
@@ -126,7 +134,7 @@ export const useNotificationStore = defineStore('notification', () => {
     } catch (error) {
       console.error(`標記通知 ${id} 為已讀失敗:`, error)
       // 如果 API 失敗，回滾本地狀態
-      notification.is_read = wasRead
+      notification.isRead = wasRead
       if (!wasRead) {
         unreadCount.value++
       }
@@ -252,7 +260,7 @@ export const useNotificationStore = defineStore('notification', () => {
         notifications.value.splice(index, 1)
 
         // 如果刪除的是未讀通知，更新未讀數量
-        if (!notification.is_read && unreadCount.value > 0) {
+        if (!notification.isRead && unreadCount.value > 0) {
           unreadCount.value--
         }
       }
@@ -270,7 +278,12 @@ export const useNotificationStore = defineStore('notification', () => {
    * @param {Object} notification - 通知物件
    */
   const addNotification = (notification) => {
-    notifications.value.unshift(notification)
+    // 檢查通知是否已存在（避免重複）
+    const exists = notifications.value.some(n => n.id === notification.id)
+    if (!exists) {
+      notifications.value.unshift(notification)
+      console.log('✅ 新通知已添加到列表:', notification.title)
+    }
   }
 
   /**
@@ -286,18 +299,28 @@ export const useNotificationStore = defineStore('notification', () => {
     notificationSSEService.connect(
       // 收到新通知時的回調
       (notification) => {
-        console.log('Store 收到新通知:', notification)
+        console.log('📬 Store 收到新通知:', notification)
 
-        // 添加到通知列表
+        // 添加到通知列表（會自動檢查重複）
         addNotification(notification)
 
         // 顯示通知提示
         showNotificationToast(notification)
 
+        // 同步更新未讀數量
+        unreadCount.value++
+        console.log('📊 未讀數量更新:', unreadCount.value)
+
         // 更新用戶 store 的通知數量
         const userStore = useUserStore()
         if (userStore.notifyQuantity !== undefined) {
           userStore.notifyQuantity++
+          console.log('📊 用戶 store 通知數量更新:', userStore.notifyQuantity)
+        }
+
+        // 更新分頁資訊中的總數量
+        if (pagination.value.totalElements !== undefined) {
+          pagination.value.totalElements++
         }
       },
       // 錯誤回調
@@ -376,6 +399,7 @@ export const useNotificationStore = defineStore('notification', () => {
     unreadCount,
 
     // Getters
+    unreadNotifications,
     recentNotifications,
 
     // Actions

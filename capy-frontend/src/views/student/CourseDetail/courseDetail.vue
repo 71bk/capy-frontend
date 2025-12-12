@@ -316,16 +316,25 @@ const formatReviewDate = (dateString) => {
   const date = new Date(dateString)
   const now = new Date()
   const diffTime = Math.abs(now - date)
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
-  if (diffDays < 30) {
-    return `${diffDays} days ago`
+  const diffMinutes = Math.floor(diffTime / (1000 * 60))
+  const diffHours = Math.floor(diffTime / (1000 * 60 * 60))
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+
+  if (diffMinutes < 1) {
+    return '剛剛'
+  } else if (diffMinutes < 60) {
+    return `${diffMinutes} 分鐘前`
+  } else if (diffHours < 24) {
+    return `${diffHours} 小時前`
+  } else if (diffDays < 30) {
+    return `${diffDays} 天前`
   } else if (diffDays < 365) {
     const months = Math.floor(diffDays / 30)
-    return `${months} month${months > 1 ? 's' : ''} ago`
+    return `${months} 個月前`
   } else {
     const years = Math.floor(diffDays / 365)
-    return `${years} year${years > 1 ? 's' : ''} ago`
+    return `${years} 年前`
   }
 }
 

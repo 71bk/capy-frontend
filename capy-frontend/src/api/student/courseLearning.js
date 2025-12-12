@@ -285,6 +285,32 @@ export const triggerAttachmentDownload = async (attachmentId, fileName) => {
   }
 }
 
+/**
+ * 課程評論相關 API
+ */
+
+/**
+ * 查詢我自己的評論（需已購課且登入）
+ * @param {string} courseId - 課程 ID
+ * @returns {Promise<CourseReviewVo|null>}
+ * @example
+ * Response: Result<CourseReviewVo>
+ * {
+ *   courseId: string,
+ *   userId: string,
+ *   rating: number,  // 1-5 星
+ *   comment: string,
+ *   createdAt: string  // ISO-8601 格式
+ * }
+ *
+ * 若尚未評論則 data 為 null
+ */
+export const getMyReview = (courseId) => {
+  return http.get('/student/reviews/me', {
+    params: { courseId }
+  })
+}
+
 export default {
   getLessonSummary,
   getCourseSections,
@@ -296,5 +322,6 @@ export default {
   getHlsMaster,
   getHlsResource,
   buildHlsUrl,
-  triggerAttachmentDownload
+  triggerAttachmentDownload,
+  getMyReview
 }

@@ -91,7 +91,7 @@ const studentRoutes = [
       {
         path: "/student",
         component: () => import("@/views/student/layout/StudentCenterLayout.vue"),
-        meta: { requiresAuth: true, role: "student" },
+        meta: { requiresAuth: true },
         children: [
           // 我的學習
           {

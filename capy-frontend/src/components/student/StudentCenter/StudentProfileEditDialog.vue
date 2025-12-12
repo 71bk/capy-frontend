@@ -33,7 +33,7 @@
               :before-upload="beforeAvatarUpload"
               :auto-upload="false"
               :on-change="handleAvatarChange"
-              accept="image/*"
+              accept="image/png,image/jpeg,image/jpg"
             >
               <div class="avatar-container">
                 <img
@@ -728,11 +728,13 @@ const handleAvatarUpload = async (file) => {
 
 // Before Avatar Upload Validation
 const beforeAvatarUpload = (file) => {
-  const isImage = file.type.startsWith('image/')
+  // 檢查檔案類型 - 只允許 PNG, JPEG, JPG
+  const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg']
+  const isAllowedType = allowedTypes.includes(file.type)
   const isLt5M = file.size / 1024 / 1024 < 5
 
-  if (!isImage) {
-    ElMessage.error('只能上傳圖片檔案！')
+  if (!isAllowedType) {
+    ElMessage.error('只能上傳 PNG、JPEG 或 JPG 格式的圖片！')
     return false
   }
   if (!isLt5M) {
@@ -1041,38 +1043,59 @@ const handleSave = async () => {
 
     isLoading.value = true
 
-    // 準備更新資料
-    const updateData = {
-      nickname: formData.value.nickname
-    }
-
-    // 如果有待上傳的頭像，先上傳取得 URL
+    // 如果有待上傳的頭像，先上傳
     if (pendingAvatarFile.value) {
       try {
         ElMessage.info('正在上傳頭像...')
 
-        // 步驟 1：上傳頭像取得 URL
+        // 步驟 1：上傳頭像（後端會自動更新使用者的頭像）
         const uploadResult = await uploadStudentAvatar(pendingAvatarFile.value)
 
         // uploadResult 已被攔截器解包，直接是 { avatarUrl }
         if (uploadResult && uploadResult.avatarUrl) {
-          updateData.avatarUrl = uploadResult.avatarUrl
           ElMessage.success('頭像上傳成功')
         } else {
           throw new Error('頭像上傳失敗：未取得 URL')
         }
       } catch (error) {
         console.error('頭像上傳錯誤:', error)
-        ElMessage.error(error.message || '頭像上傳失敗，請稍後再試')
+
+        // 處理不同的錯誤情況
+        let errorMessage = '頭像上傳失敗，請稍後再試'
+
+        if (error.response) {
+          const status = error.response.status
+          const responseData = error.response.data
+
+          if (status === 400) {
+            // 檢查是否為檔案類型錯誤
+            if (responseData?.message?.includes('content type not allowed')) {
+              errorMessage = '不支援的圖片格式！請上傳 PNG、JPEG 或 JPG 格式的圖片'
+            } else if (responseData?.message) {
+              errorMessage = responseData.message
+            } else {
+              errorMessage = '圖片格式不符合要求，請上傳 PNG、JPEG 或 JPG 格式'
+            }
+          } else if (status === 413) {
+            errorMessage = '圖片檔案過大，請上傳小於 5MB 的圖片'
+          } else if (responseData?.message) {
+            errorMessage = responseData.message
+          }
+        } else if (error.message) {
+          errorMessage = error.message
+        }
+
+        ElMessage.error(errorMessage)
         isLoading.value = false
         return
       }
-    } else if (formData.value.avatarUrl) {
-      // 如果沒有新頭像但有現有的 avatarUrl，保留它
-      updateData.avatarUrl = formData.value.avatarUrl
     }
 
-    // 步驟 2：使用 JSON 格式更新 profile
+    // 步驟 2：更新暱稱（只傳送 nickname，不傳送 avatarUrl）
+    const updateData = {
+      nickname: formData.value.nickname
+    }
+
     const result = await updateStudentProfile(updateData)
 
     // result 已經是 data 物件：{ userId, nickname, email, avatarUrl, ... }

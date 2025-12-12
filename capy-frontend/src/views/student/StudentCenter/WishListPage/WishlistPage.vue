@@ -11,17 +11,11 @@
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="newest" :class="{ active: sortBy === 'newest' }">
-                由新到舊
+              <el-dropdown-item command="desc" :class="{ active: sortBy === 'desc' }">
+                最新加入
               </el-dropdown-item>
-              <el-dropdown-item command="oldest" :class="{ active: sortBy === 'oldest' }">
-                由舊到新
-              </el-dropdown-item>
-              <el-dropdown-item command="titleAsc" :class="{ active: sortBy === 'titleAsc' }">
-                標題 A-Z
-              </el-dropdown-item>
-              <el-dropdown-item command="titleDesc" :class="{ active: sortBy === 'titleDesc' }">
-                標題 Z-A
+              <el-dropdown-item command="asc" :class="{ active: sortBy === 'asc' }">
+                最早加入
               </el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -76,22 +70,12 @@ const wishlistStore = useWishlistStore()
 
 const currentPage = ref(1)
 const pageSize = ref(6)
-const sortBy = ref('newest')
+const sortBy = ref('desc')
 
 // 排序標籤
 const sortLabels = {
-  'newest': '由新到舊',
-  'oldest': '由舊到新',
-  'titleAsc': '標題 A-Z',
-  'titleDesc': '標題 Z-A'
-}
-
-// 排序映射到後端 API 格式
-const sortMapping = {
-  'newest': 'addedAt,desc',
-  'oldest': 'addedAt,asc',
-  'titleAsc': 'title,asc',
-  'titleDesc': 'title,desc'
+  'desc': '最新加入',
+  'asc': '最早加入'
 }
 
 // 將 wishlist store 的資料轉換為 ExploreCourseCard 需要的格式
@@ -99,9 +83,10 @@ const wishlistCourses = computed(() => {
   return wishlistStore.items.map(item => ({
     id: item.courseId,
     title: item.title,
-    instructor: item.instructor,
+    instructorName: item.instructor, // 使用 instructorName 欄位
+    instructor_name: item.instructor, // 相容舊欄位名稱
     coverImageUrl: item.coverImageUrl,
-    rating: item.averageRating || 0, // 使用後端資料
+    averageRating: item.averageRating || 0, // 使用正確的欄位名稱
     reviewCount: item.reviewCount || 0, // 使用後端資料
     enrollmentCount: item.enrollmentCount || 0, // 使用後端資料
     price: item.price,
@@ -160,7 +145,7 @@ const loadWishlist = async () => {
     await wishlistStore.loadCenterWishlistFromAPI({
       page: currentPage.value - 1, // 後端從 0 開始
       size: pageSize.value,
-      sort: sortMapping[sortBy.value]
+      sort: sortBy.value // 直接使用 'asc' 或 'desc'
     })
   } catch (error) {
     console.error('載入願望清單失敗:', error)

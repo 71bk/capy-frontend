@@ -21,9 +21,10 @@ interface WishlistItem {
   price: number
   coverImageUrl: string
   addedAt: number // 時間戳記，用於排序
-  // Student Center 完整資料欄位
+  // 評價資訊（簡版和完整版都需要）
   averageRating?: number
   reviewCount?: number
+  // Student Center 完整資料欄位
   enrollmentCount?: number
   tags?: string[]
   categories?: string[]
@@ -181,10 +182,13 @@ export const useWishlistStore = defineStore('wishlist', () => {
         return {
           courseId: item.courseId || item.id,
           title: item.courseTitle || item.title,
-          instructor: item.instructorName || '',
+          instructor: item.instructorName || item.instructor || '',
           price: item.price,
           coverImageUrl: item.coverImageUrl,
-          addedAt: Date.now()
+          addedAt: Date.now(),
+          // 包含評價資訊
+          averageRating: item.averageRating || 0,
+          reviewCount: item.reviewCount || 0
         }
       })
 

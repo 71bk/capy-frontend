@@ -42,7 +42,8 @@ export const useUserStore = defineStore('user', () => {
     userId: null,
     nickname: '',
     email: '',
-    avatarUrl: ''
+    avatarUrl: '',
+    roles: []
   })
 
   /**
@@ -110,7 +111,8 @@ export const useUserStore = defineStore('user', () => {
       userId: null,
       nickname: '',
       email: '',
-      avatarUrl: ''
+      avatarUrl: '',
+      roles: []
     }
     cartQuantity.value = 0
     wishlistQuantity.value = 0
@@ -155,7 +157,8 @@ export const useUserStore = defineStore('user', () => {
           userId: data.userInfo.userId,
           nickname: data.userInfo.nickname,
           email: data.userInfo.email,
-          avatarUrl: data.userInfo.avatarUrl || ''
+          avatarUrl: data.userInfo.avatarUrl || '',
+          roles: data.userInfo.roles || []
         }
 
         // 更新數量資訊
@@ -189,7 +192,8 @@ export const useUserStore = defineStore('user', () => {
             userId: null,
             nickname: '',
             email: '',
-            avatarUrl: ''
+            avatarUrl: '',
+            roles: []
           }
           cartQuantity.value = 0
           wishlistQuantity.value = 0

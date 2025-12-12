@@ -54,9 +54,12 @@
         <!-- Sort and Count Bar -->
         <div class="sort-count-bar">
           <el-select v-model="sortBy" placeholder="排序" size="default" class="sort-select">
-            <el-option label="最新課程" value="latest" />
             <el-option label="最熱門" value="popular" />
-            <el-option label="評分最高" value="rating" />
+            <el-option label="最新課程" value="latest" />
+            <el-option label="最舊課程" value="oldest" />
+            <el-option label="最不熱門" value="unpopular" />
+            <el-option label="價格由低到高" value="price_low" />
+            <el-option label="價格由高到低" value="price_high" />
           </el-select>
           <span class="course-count">共有 {{ coursesData.totalElements }} 堂課程</span>
         </div>
@@ -299,14 +302,22 @@ const loadCourses = async () => {
       params.keyword = selectedTags.value[0]
     }
 
-    // 分類篩選（只取第一個分類，因為後端只支援單一 categoryId）
+    // 分類篩選（支援多選，傳遞 categoryIds 陣列）
     if (selectedCategories.value.length > 0) {
-      params.categoryId = selectedCategories.value[0]
+      params.categoryIds = selectedCategories.value
     }
 
-    // 評分篩選
+    // 標籤篩選（支援多選，傳遞 tagIds 陣列）
+    // 注意：目前 selectedTags 存的是標籤名稱字串，需要轉換為 ID
+    // 如果後端需要 tagIds，這裡需要維護 tag name 到 ID 的映射
+    // 暫時保留此邏輯，等後端確認後再調整
+    // if (selectedTags.value.length > 0) {
+    //   params.tagIds = selectedTags.value
+    // }
+
+    // 評分篩選（支援多選，傳遞 maxRatings 陣列）
     if (selectedRating.value > 0) {
-      params.maxRating = selectedRating.value
+      params.maxRatings = [selectedRating.value]
     }
 
     const result = await searchCourses(params)

@@ -125,7 +125,7 @@ router.afterEach((to, from) => {
 });
 
 router.beforeEach(async (to, from, next) => {
-  if (to.path.startsWith("/admin")) {
+  if (to.path.startsWith("/admin/") || to.path === "/admin") {
     try {
       await CheckIsAdmin();
     } catch (e) {
@@ -140,7 +140,7 @@ router.beforeEach(async (to, from, next) => {
       return;
     }
   }
-  if (to.path.startsWith("/teacher")) {
+  if (to.path.startsWith("/teacher/") || to.path === "/teacher") {
     try {
       await CheckIsTeacher();
     } catch (e) {

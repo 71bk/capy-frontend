@@ -24,7 +24,7 @@
     <!-- Rating -->
     <div class="course-rating">
       <el-rate
-        :model-value="parseFloat(course.averageRating) || 0"
+        :model-value="parseFloat(course.averageRating || course.rating) || 0"
         disabled
         allow-half
         :max="5"
@@ -32,8 +32,8 @@
         void-color="#d0d0d0"
         disabled-void-color="#d0d0d0"
       />
-      <span class="rating-score">{{ course.averageRating ? Number(course.averageRating).toFixed(1) : '0.0' }}</span>
-      <span class="rating-count">({{ formatCount(course.reviewCount) }})</span>
+      <span class="rating-score">{{ (course.averageRating || course.rating) ? Number(course.averageRating || course.rating).toFixed(1) : '0.0' }}</span>
+      <span class="rating-count">({{ formatCount(course.reviewCount || course.review_count) }})</span>
     </div>
 
     <!-- Price -->

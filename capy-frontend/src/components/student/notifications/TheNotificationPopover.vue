@@ -47,13 +47,13 @@
             v-for="item in notificationStore.recentNotifications"
             :key="item.id"
             class="notification-item"
-            :class="{ 'is-unread': !item.is_read }"
+            :class="{ 'is-unread': !item.isRead }"
             @click="handleNotificationClick(item)"
           >
             <!-- 左側圖標 -->
-            <div class="item-icon" :style="getIconStyle(item.notification_type)">
+            <div class="item-icon" :style="getIconStyle(item.notificationType)">
               <el-icon :size="18">
-                <component :is="getIconComponent(item.notification_type)" />
+                <component :is="getIconComponent(item.notificationType)" />
               </el-icon>
             </div>
 
@@ -61,11 +61,11 @@
             <div class="item-content">
               <h5 class="item-title">{{ item.title }}</h5>
               <p v-if="item.content" class="item-description">{{ item.content }}</p>
-              <span class="item-time">{{ formatRelativeTime(item.created_at) }}</span>
+              <span class="item-time">{{ formatRelativeTime(item.createdAt) }}</span>
             </div>
 
             <!-- 右側未讀指示器 -->
-            <div v-if="!item.is_read" class="item-indicator">
+            <div v-if="!item.isRead" class="item-indicator">
               <span class="unread-dot"></span>
             </div>
           </div>
@@ -125,18 +125,18 @@ const getIconComponent = (type) => {
     'payout_failed': CircleCloseFilled,
     'transcoding_failed': Warning,
     'course_force_unpublished': CircleCloseFilled,
-    
+
     // Interaction / Info
     'question_answered': ChatDotRound,
     'new_question': ChatDotRound,
     'new_enrollment': UserFilled,
     'new_review': Star,
-    
+
     // Announcements
     'instructor_announcement': Postcard,
     'platform_announcement': BellFilled
   }
-  
+
   return iconMap[type] || Bell
 }
 
@@ -153,7 +153,7 @@ const getIconStyle = (type) => {
     'transcoding_failed',
     'course_force_unpublished'
   ]
-  
+
   // Interaction / Info - Teal
   const interactionTypes = [
     'question_answered',
@@ -161,13 +161,13 @@ const getIconStyle = (type) => {
     'new_enrollment',
     'new_review'
   ]
-  
+
   // Announcements - Brown/Orange
   const announcementTypes = [
     'instructor_announcement',
     'platform_announcement'
   ]
-  
+
   if (criticalTypes.includes(type)) {
     return {
       color: 'var(--capy-danger)',
@@ -184,7 +184,7 @@ const getIconStyle = (type) => {
       backgroundColor: 'var(--el-color-warning-light-9)'
     }
   }
-  
+
   // Default
   return {
     color: 'var(--capy-info)',
@@ -201,7 +201,7 @@ const formatRelativeTime = (dateString) => {
   const now = new Date()
   const date = new Date(dateString)
   const diffInSeconds = Math.floor((now - date) / 1000)
-  
+
   if (diffInSeconds < 60) {
     return '剛剛'
   } else if (diffInSeconds < 3600) {
@@ -238,16 +238,16 @@ const handleNotificationClick = async (item) => {
   try {
     // 標記為已讀
     await notificationStore.markAsRead(item.id)
-    
+
     // 關閉 popover
     visible.value = false
-    
+
     // 根據通知類型和相關實體類型導航
-    if (item.related_entity_type === 'course' && item.related_entity_id) {
+    if (item.relatedEntityType === 'course' && item.relatedEntityId) {
       // 課程相關通知：導航到課程詳情頁
       await router.push({
         name: 'CourseDetail',
-        params: { id: item.related_entity_id }
+        params: { id: item.relatedEntityId }
       }).catch(err => {
         console.warn('導航失敗:', err)
         // 如果導航失敗，嘗試導航到通知頁面
@@ -281,8 +281,9 @@ const handleViewAll = async () => {
 
 // ==================== Lifecycle ====================
 
-// 載入通知資料
-notificationStore.fetchNotifications()
+// 不需要在這裡載入通知資料
+// 通知資料由 App.vue 在登入時透過 SSE 自動維護
+// Popover 直接使用 store 中的 recentNotifications computed 屬性
 </script>
 
 <style scoped>

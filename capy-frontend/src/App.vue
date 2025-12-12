@@ -63,8 +63,14 @@ onMounted(async () => {
     cartStore.loadFromStorage()
     wishlistStore.loadFromStorage()
 
+    // 初始載入通知列表（用於 Popover 顯示）
+    await notificationStore.fetchStudentNotifications({
+      page: 0,
+      size: 10  // 載入最近 10 條通知
+    })
+
     // 獲取未讀通知數量
-    notificationStore.fetchUnreadCount()
+    await notificationStore.fetchUnreadCount()
 
     // 啟動 SSE 通知服務
     notificationStore.startSSE()
@@ -93,14 +99,21 @@ onMounted(async () => {
 })
 
 // 監聽用戶登入狀態變化
-watch(() => userStore.isAuthenticated, (isAuth) => {
+watch(() => userStore.isAuthenticated, async (isAuth) => {
   if (isAuth) {
-    // 用戶登入時獲取未讀數量並啟動 SSE
-    notificationStore.fetchUnreadCount()
+    // 用戶登入時載入通知列表、獲取未讀數量並啟動 SSE
+    await notificationStore.fetchStudentNotifications({
+      page: 0,
+      size: 10
+    })
+    await notificationStore.fetchUnreadCount()
     notificationStore.startSSE()
   } else {
-    // 用戶登出時停止 SSE
+    // 用戶登出時停止 SSE 並清空通知列表
     notificationStore.stopSSE()
+    // 清空通知數據
+    notificationStore.notifications = []
+    notificationStore.unreadCount = 0
   }
 })
 
@@ -114,15 +127,27 @@ onUnmounted(() => {
 
 // 監聽頁面可見性變化（優化）
 if (typeof document !== 'undefined') {
-  document.addEventListener('visibilitychange', () => {
+  document.addEventListener('visibilitychange', async () => {
     if (document.hidden) {
       // 頁面隱藏時保持連線（後端有 30 分鐘超時）
       console.log('頁面隱藏，SSE 連線保持')
     } else {
-      // 頁面顯示時確保連線
-      if (userStore.isAuthenticated && !notificationStore.isSSEConnected) {
-        console.log('頁面顯示，重新建立 SSE 連線')
-        notificationStore.startSSE()
+      // 頁面顯示時確保連線並重新載入通知
+      if (userStore.isAuthenticated) {
+        console.log('頁面顯示，檢查 SSE 連線狀態')
+
+        // 重新載入通知列表和未讀數量
+        await notificationStore.fetchStudentNotifications({
+          page: 0,
+          size: 10
+        })
+        await notificationStore.fetchUnreadCount()
+
+        // 如果 SSE 未連線，重新建立連線
+        if (!notificationStore.isSSEConnected) {
+          console.log('重新建立 SSE 連線')
+          notificationStore.startSSE()
+        }
       }
     }
   })

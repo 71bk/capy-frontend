@@ -112,11 +112,11 @@ export const fetchWishlistItems = () => {
  * @param {Object} params - 查詢參數
  * @param {number} [params.page=0] - 頁碼（從 0 開始）
  * @param {number} [params.size=6] - 每頁筆數
- * @param {string} [params.sort='addedAt,desc'] - 排序方式（支援：addedAt,desc | addedAt,asc | title,asc | title,desc）
+ * @param {string} [params.sort='desc'] - 排序方式（僅支援：asc 或 desc，對應 addedAt 時間排序，預設 desc 最新在前）
  * @returns {Promise<Object>}
  *
  * @example
- * const wishlist = await fetchCenterWishlist({ page: 0, size: 6, sort: 'addedAt,desc' })
+ * const wishlist = await fetchCenterWishlist({ page: 0, size: 6, sort: 'desc' })
  */
 export const fetchCenterWishlist = (params = {}) => {
   return request({
@@ -125,7 +125,7 @@ export const fetchCenterWishlist = (params = {}) => {
     params: {
       page: params.page ?? 0,
       size: params.size ?? 6,
-      sort: params.sort ?? 'addedAt,desc'
+      sort: params.sort ?? 'desc'
     }
   }).then(response => {
     // 後端返回的結構是 { data: { myWishlist: {...} } }

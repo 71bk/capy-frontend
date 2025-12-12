@@ -138,6 +138,9 @@ const handleUserCommand = (command) => {
   </div>
 </template>
 
+<style src="@/styles/element-plus-override.css"></style>
+<style src="@/styles/admin-dashboard.css"></style>
+
 <style scoped>
 /* ==================== Main Wrapper ==================== */
 .main-wrapper {

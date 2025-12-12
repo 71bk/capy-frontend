@@ -335,7 +335,8 @@ import {
   getMyQA,
   postQuestion,
   buildHlsUrl,
-  triggerAttachmentDownload
+  triggerAttachmentDownload,
+  getMyReview
 } from '@/api/student/courseLearning'
 import { rateCourse } from '@/api/student/studentCenter'
 
@@ -519,6 +520,30 @@ const loadAttachments = async () => {
 }
 
 /**
+ * 載入我的評論
+ */
+const loadMyReview = async () => {
+  try {
+    const data = await getMyReview(route.params.courseId)
+
+    // 如果有評論資料，更新本地狀態
+    if (data) {
+      userRating.value = data.rating
+      userComment.value = data.comment
+    } else {
+      // 如果沒有評論，重置狀態
+      userRating.value = 0
+      userComment.value = ''
+    }
+  } catch (error) {
+    console.error('載入評論失敗:', error)
+    // 載入評論失敗不影響主要功能，僅記錄錯誤
+    userRating.value = 0
+    userComment.value = ''
+  }
+}
+
+/**
  * 載入課程資料（整合所有資料載入）
  */
 const loadCourseData = async () => {
@@ -529,7 +554,8 @@ const loadCourseData = async () => {
     await Promise.all([
       loadLessonSummary(),
       loadCourseSections(),
-      loadAttachments()
+      loadAttachments(),
+      loadMyReview()
     ])
 
     // 更新路由 meta
@@ -836,6 +862,9 @@ const handleReviewSubmitted = async (reviewData) => {
     userComment.value = reviewData.comment
 
     ElMessage.success('評價提交成功！感謝您的反饋')
+
+    // 關閉對話框
+    ratingDialogVisible.value = false
   } catch (error) {
     console.error('提交評價失敗:', error)
 
@@ -844,6 +873,8 @@ const handleReviewSubmitted = async (reviewData) => {
       ElMessage.error('已購買後才能評價')
     } else if (error.response?.status === 409) {
       ElMessage.error('已經評過此課程')
+      // 如果是重複評分錯誤，重新載入評論狀態
+      await loadMyReview()
     } else if (error.response?.status === 401 || error.response?.status === 403) {
       ElMessage.error('請先登入')
     } else {
