@@ -4,7 +4,7 @@ import instance from "../../utils/http.js";
  * 提交成為老師的申請
  * POST /api/become-teacher
  *
- * 需要 JWT 認證（Cookie jwt 或 Header Authorization: Bearer <token>）
+ * 需要 JWT 認證（使用 HttpOnly Cookie，withCredentials: true）
  * Content-Type: multipart/form-data
  *
  * @param {Object} applicationData - 申請資料物件

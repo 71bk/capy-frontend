@@ -256,10 +256,8 @@ const course = computed(() => {
   const { courseInfo } = courseData.value
   const { course: courseBasic, sections, rateTable, userReviews, isEnrolled } = courseInfo
 
-  // 計算總時長
-  const totalDurationMinutes = calculateTotalDuration(sections || [])
-  const totalHours = Math.floor(totalDurationMinutes / 60)
-  const totalMinutes = totalDurationMinutes % 60
+  // 使用後端提供的總時長（已轉換為小時並向上取整）
+  const totalHours = courseBasic?.totalHours || 0
 
   return {
     id: courseBasic?.courseId,
@@ -267,11 +265,11 @@ const course = computed(() => {
     description: courseBasic?.description || '',
     cover: courseBasic?.coverImageUrl || 'https://via.placeholder.com/800x400?text=Course+Image',
     price: courseBasic?.price || 0,
-    duration: `${totalHours}h ${totalMinutes}m`,
+    duration: `${totalHours}h`,
     sections: courseBasic?.totalSections || 0,
-    attachments: 0, // API 未提供此欄位
-    totalLength: `${totalHours} 小時 ${totalMinutes} 分鐘的影片`,
-    resources: 0, // API 未提供此欄位
+    attachments: courseBasic?.attachmentCount || 0,
+    totalLength: `${totalHours} 小時的影片`,
+    resources: courseBasic?.attachmentCount || 0,
     rating: rateTable?.averageRating || 0,
     totalReviews: rateTable?.reviewCount || 0,
     ratingDistribution: (() => {
@@ -295,7 +293,7 @@ const course = computed(() => {
       lessons: (section.lessons || []).map(lesson => ({
         id: lesson.lessonId,
         title: lesson.lessonTitle,
-        duration: `${lesson.lessonDurationMinutes}m`,
+        duration: lesson.lessonDurationText || '0分0秒',
         preview: lesson.freePreview,
         description: lesson.description,
         displayOrder: lesson.displayOrder
