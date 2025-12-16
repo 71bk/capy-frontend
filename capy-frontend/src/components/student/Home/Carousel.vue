@@ -37,7 +37,7 @@ const slides = ref([
     badge: "講師招募",
     title: "將你的專業變現，影響全世界",
     subtitle: "建立課程、追蹤收益，成為 CapyCourse 合作講師",
-    route: "/instructor/apply"
+    route: "/instructor/landing"
   },
   {
     id: 3,
