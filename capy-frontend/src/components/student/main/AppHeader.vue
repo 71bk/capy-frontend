@@ -219,7 +219,7 @@ const handleNotifications = () => {
 </script>
 
 <style lang="scss" scoped>
-@import "@/styles/_breakpoints.scss";
+@use "@/styles/breakpoints" as *;
 
 .mobile-menu-btn {
   display: none;
@@ -302,7 +302,7 @@ const handleNotifications = () => {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 14px;
   font-weight: 500;
-  
+
   /* Glassmorphism Base */
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
