@@ -66,24 +66,6 @@ const studentRoutes = [
         name: "instructorLanding",
         component: () => import("@/views/student/instructorApply/InstructorLanding.vue"),
       },
-      // ====================================
-      // 其他頁面路由
-      // ====================================
-      {
-        path: "about",
-        name: "about",
-        component: () => import("@/views/student/Others/About.vue"),
-      },
-      {
-        path: "contact",
-        name: "contact",
-        component: () => import("@/views/student/Others/contact.vue"),
-      },
-      {
-        path: "privacy",
-        name: "privacy",
-        component: () => import("@/views/student/Others/Privacy.vue"),
-      },
 
       // ====================================
       // 支援與幫助頁面路由
